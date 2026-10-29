@@ -6,3 +6,4 @@ __pycache__/
 *.tmp
 planning_solarcast.md
 infoabouttheproject.txt
+*.pkl

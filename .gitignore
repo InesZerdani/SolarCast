@@ -1,0 +1,8 @@
+.venv/
+data/
+.ipynb_checkpoints/
+__pycache__/
+*.docx
+*.tmp
+planning_solarcast.md
+infoabouttheproject.txt

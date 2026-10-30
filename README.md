@@ -49,28 +49,14 @@ tandis que le modèle reste stable autour de 4000 kW de RMSE.
 
 ## Points notables
 
-**Erreur d'échelle détectée dans le dataset.** Le calcul du rendement de
-conversion des onduleurs donnait 9,8 %, valeur physiquement impossible.
-La puissance DC était surévaluée d'un facteur 10 ; après correction, le
-rendement s'établit à 97,7 %.
+## Points notables
 
-**Distinction nowcasting / prévision.** Les premiers modèles atteignaient
-80 % de skill score, mais utilisaient l'irradiance mesurée au même
-instant — information indisponible en situation réelle. Sans elle, la
-prévision à 1 h atteint 30,5 % de skill score, grâce au profil horaire et
-à l'état récent de la centrale.
+- Erreur d'échelle ×10 sur la puissance DC, détectée par le rendement onduleur
+- Premiers modèles en nowcasting (80 %), reformulés en vraie prévision (30 % à 1 h)
+- La météo ERA5 n'améliore pas la prévision : maille trop grossière
+- Décalages temporels recalculés en temps exact (les nuits étant retirées)
 
-**Apport limité de la météo.** L'ajout des données ERA5 n'améliore pas la
-prévision (3898 kW contre 3930 kW sans météo) : la maille de la réanalyse
-est trop grossière pour capter les nuages au-dessus du site.
-
-**Décalage temporel corrigé.** Les nuits ayant été retirées, un décalage
-en nombre de pas (`shift`) sautait d'un jour à l'autre. Les cibles et la
-production de la veille sont calculées par décalage exact en temps.
-
-**Non-linéarité de la relation irradiance-production.** La production
-s'infléchit au-delà de 0,8 d'irradiance, cohérent avec les pertes
-thermiques des modules (-0,4 %/°C) et un écrêtage onduleur.
+Détails des anomalies, erreurs et décisions : [docs/analyse.md](docs/analyse.md)
 
 ## Dashboard
 
@@ -86,6 +72,3 @@ Optimisation du pilotage d'une batterie de stockage à partir des prévisions.
 Python, pandas, NumPy, scikit-learn, XGBoost, pvlib, Streamlit,
 matplotlib, seaborn
 
-## Auteur
-
-Ines Zerdani — MSc Intelligence Artificielle

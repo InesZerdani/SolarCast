@@ -31,4 +31,4 @@ ax.legend()
 ax.grid(True)
 st.pyplot(fig)
 
-st.caption("Modèle : Random Forest — variables météo prévues (Open-Meteo) et état récent de la centrale")
+st.caption("Modèle : Random Forest — météo Open-Meteo (réanalyse ERA5) et état récent de la centrale")

@@ -1,5 +1,6 @@
 .venv/
-data/
+data/*
+!data/predictions.csv
 .ipynb_checkpoints/
 __pycache__/
 *.docx

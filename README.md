@@ -1,7 +1,7 @@
 # SolarCast
 
 Prévision de production photovoltaïque par apprentissage automatique, à
-partir de prévisions météorologiques et de l'état récent de la centrale.
+partir de données météorologiques et de l'état récent de la centrale.
 
 ## Problème
 
@@ -12,26 +12,26 @@ de mesures disponibles seulement a posteriori.
 ## Données
 
 - Production d'une centrale photovoltaïque indienne (34 jours, pas de
-  15 minutes, 22 onduleurs) — dataset public Kaggle
-- Prévisions météorologiques Open-Meteo (archives ERA5) : rayonnement
+  15 minutes, 22 onduleurs) — [dataset public Kaggle](https://www.kaggle.com/datasets/anikannal/solar-power-generation-data)
+- Données météorologiques Open-Meteo (réanalyse ERA5) : rayonnement
   global, direct et diffus, couverture nuageuse à trois altitudes,
   température, humidité, vent, précipitations
 
 ## Résultats
 
-Prévision à 1 heure, Random Forest, séparation temporelle 80/20 :
+Prévision à 1 heure, séparation temporelle 80/20 :
 
 | Modèle | RMSE (kW) | Skill score |
 |---|---|---|
-| Persistance (référence) | 5380 | 0 % |
-| XGBoost | 3935 | 26,9 % |
-| **Random Forest** | **3712** | **31,0 %** |
+| Persistance (référence) | 5581 | 0 % |
+| XGBoost | 4003 | 28,3 % |
+| **Random Forest** | **3898** | **30,2 %** |
 
 Performance selon l'horizon de prévision :
 
 | Horizon | 15 min | 30 min | 1 h | 2 h | 3 h | 6 h |
 |---|---|---|---|---|---|---|
-| Skill score | 3,8 % | 15,4 % | 30,9 % | 51,4 % | 60,5 % | 68,9 % |
+| Skill score | 4,4 % | 15,8 % | 30,1 % | 50,5 % | 58,7 % | 69,0 % |
 
 Le gain augmente avec l'horizon : la persistance se dégrade rapidement,
 tandis que le modèle reste stable autour de 4000 kW de RMSE.
@@ -45,7 +45,7 @@ tandis que le modèle reste stable autour de 4000 kW de RMSE.
 | `03_exploration.ipynb` | Profils horaires, corrélations |
 | `04_features.ipynb` | Encodage cyclique, position solaire (pvlib), variables retardées |
 | `05_models.ipynb` | Premiers modèles — mise en évidence d'un problème de nowcasting |
-| `06_meteo_prevision.ipynb` | Passage à la prévision réelle avec données météo |
+| `06_meteo_prevision.ipynb` | Prévision avec données météo, comparaison des horizons |
 
 ## Points notables
 
@@ -56,22 +56,30 @@ rendement s'établit à 97,7 %.
 
 **Distinction nowcasting / prévision.** Les premiers modèles atteignaient
 80 % de skill score, mais utilisaient l'irradiance mesurée au même
-instant — information indisponible en situation réelle. Privés de cette
-variable, ils faisaient moins bien que la persistance. Le problème a été
-reformulé avec des prévisions météorologiques, seules données réellement
-disponibles à l'avance.
+instant — information indisponible en situation réelle. Sans elle, la
+prévision à 1 h atteint 30,5 % de skill score, grâce au profil horaire et
+à l'état récent de la centrale.
+
+**Apport limité de la météo.** L'ajout des données ERA5 n'améliore pas la
+prévision (3898 kW contre 3930 kW sans météo) : la maille de la réanalyse
+est trop grossière pour capter les nuages au-dessus du site.
+
+**Décalage temporel corrigé.** Les nuits ayant été retirées, un décalage
+en nombre de pas (`shift`) sautait d'un jour à l'autre. Les cibles et la
+production de la veille sont calculées par décalage exact en temps.
 
 **Non-linéarité de la relation irradiance-production.** La production
 s'infléchit au-delà de 0,8 d'irradiance, cohérent avec les pertes
 thermiques des modules (-0,4 %/°C) et un écrêtage onduleur.
 
 ## Dashboard
-Lancer le dashboard :
 
+    pip install -r requirements.txt
     streamlit run app.py
 
-Nécessite d'avoir exécuté les notebooks au préalable pour générer
-`data/predictions.csv`.
+## Suite
+
+Optimisation du pilotage d'une batterie de stockage à partir des prévisions.
 
 ## Outils
 
